@@ -65,6 +65,24 @@ namespace Geolocation.Controllers
             return R * c;
         }
 
+        private static string GetLocationNameFromUrl(string url)
+    {
+        Uri uri = new(url);
+        string path = uri.AbsolutePath;
+        string[] segments = path.Split('/');
+        
+        // The location name is typically in the segment after "place"
+        for (int i = 0; i < segments.Length; i++)
+        {
+            if (segments[i].Equals("place", StringComparison.OrdinalIgnoreCase) && i + 1 < segments.Length)
+            {
+                return Uri.UnescapeDataString(segments[i + 1]).Replace('+', ' ');
+            }
+        }
+        return "Unknown location";
+    }
+        
+
         [HttpPost]
         public async Task<IActionResult> GetDistance([FromForm] LocationForms locationForms)
         {
@@ -89,11 +107,12 @@ namespace Geolocation.Controllers
             double targetlat = targetLongLat[1];
 
             var distance = Haversine(userlat, userlong, targetlat, targetlong);
-
+            var LocationName = GetLocationNameFromUrl(targetFullUrl);
             return Ok(new DistanceKm
             {
                 Message = "Successful",
-                Distance = $"{distance:F2}  Kilometers"
+                Distance = $"{distance:F2}  Kilometers",
+                LocationName = LocationName
             });
         }
     }

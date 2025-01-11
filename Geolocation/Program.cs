@@ -1,5 +1,3 @@
-using Scalar.AspNetCore;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,7 +9,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.MapScalarApiReference();
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -20,7 +17,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
-app.MapControllers();
 app.MapStaticAssets();
 
 app.MapControllerRoute(

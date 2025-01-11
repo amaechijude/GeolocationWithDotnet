@@ -15,5 +15,6 @@ namespace Geolocation.Models
     {
         public string? Message {get; set;}
         public string? Distance {get; set;}
+        public string? LocationName {get; set;}
     }
 }

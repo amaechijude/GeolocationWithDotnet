@@ -32,6 +32,9 @@ async function showPosition(position) {
     if (response.status == 200) {
         const data = await response.json();
         console.log(data);
+         // console.log(data.distance);
+         trow = document.getElementById("reply");
+         trow.innerHTML = `You are just <strong>${data.distance}</strong> </br> from ${data.locationName}`;
     } else {
         console.log("Error");
     }
