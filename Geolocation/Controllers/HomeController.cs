@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Geolocation.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace Geolocation.Controllers
 {
@@ -19,6 +20,11 @@ namespace Geolocation.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Location()
         {
             return View();
         }
