@@ -11,4 +11,10 @@ namespace Geolocation.Models
         [Url]
         public string? TargetLocationURL { get; set; }
     }
+
+    public class DistanceKm
+    {
+        public string? Message {get; set;}
+        public string? Distance {get; set;}
+    }
 }

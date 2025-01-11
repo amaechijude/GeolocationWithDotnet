@@ -12,7 +12,7 @@ namespace Geolocation.Controllers
     [Route("api/[controller]")]
     public class LocationController : ControllerBase
     {
-        private static async Task<string?> GetFullUrl(string shortUrl)
+        private async Task<string> GetFullUrl(string shortUrl)
         {
             using HttpClient client = new();
             HttpRequestMessage request = new(HttpMethod.Head, shortUrl);
@@ -25,7 +25,7 @@ namespace Geolocation.Controllers
                     return response.Headers.Location.ToString();
                 }
             }
-            return null;
+            return shortUrl;
         }
 
         private static List<double> GetCoordinates(string fullUrl)
@@ -80,7 +80,7 @@ namespace Geolocation.Controllers
                 return BadRequest("Cannot urls cannot be empty");
 
             var firstFullUrl = await GetFullUrl(firstUrl);
-            var secondFullUrl = await GetFullUrl(secondUrl);
+            var secondFullUrl =await GetFullUrl(secondUrl);
             if (string.IsNullOrWhiteSpace(firstFullUrl) || string.IsNullOrWhiteSpace(secondFullUrl))
                 return BadRequest("Error with url");
 
@@ -97,7 +97,10 @@ namespace Geolocation.Controllers
 
             var distance = Haversine(firstlat, firstlong, secondlat, secondlong);
 
-            return Ok($"Your distance is {distance}  kilometers");
+            return Ok(new DistanceKm {
+                Message = "Successful",
+                Distance = $"{distance}  Kilometers"
+            });
         }
     }
 }

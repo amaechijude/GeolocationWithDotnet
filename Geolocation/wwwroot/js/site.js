@@ -13,6 +13,11 @@ form.addEventListener("submit", async (event) => {
         method: 'POST',
         body: formData
     });
-    const data = await response.json();
-    console.log(data);
+
+    if (response.status == 200) {
+        const data = await response.json();
+        console.log(data);
+    } else {
+        console.log("Error");
+    }
 });
