@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Geolocation.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Geolocation.Controllers
@@ -70,9 +71,14 @@ namespace Geolocation.Controllers
             return R * c;
         }
 
-        [HttpPost("get")]
-        public async Task<IActionResult> GetDistance(string firstUrl, string secondUrl)
+        [HttpPost]
+        public async Task<IActionResult> GetDistance([FromForm] LocationURLS uRLS)
         {
+            var firstUrl = uRLS.UserLocationURL;
+            var secondUrl = uRLS.TargetLocationURL;
+            if (string.IsNullOrWhiteSpace(firstUrl) || string.IsNullOrWhiteSpace(secondUrl))
+                return BadRequest("Cannot urls cannot be empty");
+
             var firstFullUrl = await GetFullUrl(firstUrl);
             var secondFullUrl = await GetFullUrl(secondUrl);
             if (string.IsNullOrWhiteSpace(firstFullUrl) || string.IsNullOrWhiteSpace(secondFullUrl))

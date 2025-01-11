@@ -2,12 +2,13 @@
 
 namespace Geolocation.Models
 {
-    public class Location
+    public class LocationURLS
     {
-        public int Id { get; set; }
         [Required]
-        public string? LocationName { get; set; }
         [Url]
-        public string? GoogleMapURL { get; set; }
+        public string? UserLocationURL { get; set; }
+        [Required]
+        [Url]
+        public string? TargetLocationURL { get; set; }
     }
 }
