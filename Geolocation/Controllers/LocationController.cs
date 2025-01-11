@@ -12,20 +12,14 @@ namespace Geolocation.Controllers
     [Route("api/[controller]")]
     public class LocationController : ControllerBase
     {
-        private async Task<string> GetFullUrl(string shortUrl)
+        private static async Task<string> GetFullUrl(string shortUrl)
         {
-            using HttpClient client = new();
-            HttpRequestMessage request = new(HttpMethod.Head, shortUrl);
-            HttpResponseMessage response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-
-            if ((int)response.StatusCode >= 300 && (int)response.StatusCode < 310)
             {
-                if (response.Headers.Location != null)
-                {
-                    return response.Headers.Location.ToString();
-                }
+                using HttpClient client = new();
+                // Allow auto-redirect
+                HttpResponseMessage response = await client.GetAsync(shortUrl);
+                return response.RequestMessage?.RequestUri?.ToString() ?? string.Empty;
             }
-            return shortUrl;
         }
 
         private static List<double> GetCoordinates(string fullUrl)
@@ -72,34 +66,34 @@ namespace Geolocation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetDistance([FromForm] LocationURLS uRLS)
+        public async Task<IActionResult> GetDistance([FromForm] LocationForms locationForms)
         {
-            var firstUrl = uRLS.UserLocationURL;
-            var secondUrl = uRLS.TargetLocationURL;
-            if (string.IsNullOrWhiteSpace(firstUrl) || string.IsNullOrWhiteSpace(secondUrl))
+            var targetUrl = locationForms.TargetLocationURL;
+            if (string.IsNullOrWhiteSpace(targetUrl))
                 return BadRequest("Cannot urls cannot be empty");
 
-            var firstFullUrl = await GetFullUrl(firstUrl);
-            var secondFullUrl =await GetFullUrl(secondUrl);
-            if (string.IsNullOrWhiteSpace(firstFullUrl) || string.IsNullOrWhiteSpace(secondFullUrl))
-                return BadRequest("Error with url");
+            var targetFullUrl = await GetFullUrl(targetUrl);
 
-            var firstLongLat = GetCoordinates(firstFullUrl);
-            var secondLongLat = GetCoordinates(secondFullUrl);
+            if (string.IsNullOrWhiteSpace(targetFullUrl))
+                return BadRequest("Error fetching long url");
 
-            if (firstLongLat.Count == 0 || secondLongLat.Count == 0)
-                return BadRequest("Error getting Coordinates");
+            // var firstLongLat = GetCoordinates(firstFullUrl);
+            var targetLongLat = GetCoordinates(targetFullUrl);
 
-            double firstlong = firstLongLat[0];
-            double firstlat = firstLongLat[1];
-            double secondlong = secondLongLat[0];
-            double secondlat = secondLongLat[1];
+            if (targetLongLat.Count == 0)
+                return BadRequest("Error getting target coordinates Coordinates");
 
-            var distance = Haversine(firstlat, firstlong, secondlat, secondlong);
+            double userlong = (double)locationForms.UserLongitude;
+            double userlat = (double)locationForms.UserLatitude;
+            double targetlong = targetLongLat[0];
+            double targetlat = targetLongLat[1];
 
-            return Ok(new DistanceKm {
+            var distance = Haversine(userlat, userlong, targetlat, targetlong);
+
+            return Ok(new DistanceKm
+            {
                 Message = "Successful",
-                Distance = $"{distance}  Kilometers"
+                Distance = $"{distance:F2}  Kilometers"
             });
         }
     }

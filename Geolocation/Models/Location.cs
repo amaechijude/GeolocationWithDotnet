@@ -2,14 +2,13 @@
 
 namespace Geolocation.Models
 {
-    public class LocationURLS
+    public class LocationForms
     {
         [Required]
         [Url]
-        public string? UserLocationURL { get; set; }
-        [Required]
-        [Url]
         public string? TargetLocationURL { get; set; }
+        public double UserLatitude {get; set; }
+        public double UserLongitude {get; set ; }
     }
 
     public class DistanceKm
